@@ -7,8 +7,10 @@ import Router_api from './routes/index.js';
 import Clients from './configs/connect.js';
 
 app.disable('x-powered-by');
-app.use(express.urlencoded({ extended: false, limit: 10000 }));
-app.use(express.json());
+app.use(express.urlencoded({ extended: false, limit: "1000MB" }));
+app.use(express.json({ limit: "1000MB" }));
+
+app.use('/',express.static(`./public/uploads/device/`))
 
 
 app.use('/api', Router_api);
