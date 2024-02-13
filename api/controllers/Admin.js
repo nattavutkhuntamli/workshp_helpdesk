@@ -1,5 +1,6 @@
 import Admin from "../models/Admin.js";
 import LineNotify from "../models/LineNotify.js";
+
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../configs/configs.js";
@@ -61,22 +62,22 @@ export default {
       if (!Register) {
         throw { statusCode: 400, message: "Something went wrong" };
       } else {
-        const messageLine = await LineNotify.findOne({
-            where: { name: 'เพิ่มข้อมูลแอดมิน' }
-        });
-        let config = {
-            method: 'post',
-            url: 'https://notify-api.line.me/api/notify',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Bearer ${messageLine.token}`
-            },
-            data: {
-                message: `มีการสมัครสมาชิก admin โดยใช้ชื่อยูส ${Register.username} ลงทะเบียน`,
-                title: 'Account Created',
-            }
-        }
-        await axios(config)
+        // const messageLine = await LineNotify.findOne({
+        //     where: { name: 'เพิ่มข้อมูลแอดมิน' }
+        // });
+        // let config = {
+        //     method: 'post',
+        //     url: 'https://notify-api.line.me/api/notify',
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //         'Authorization': `Bearer ${messageLine.token}`
+        //     },
+        //     data: {
+        //         message: `มีการสมัครสมาชิก admin โดยใช้ชื่อยูส ${Register.username} ลงทะเบียน`,
+        //         title: 'Account Created',
+        //     }
+        // }
+        // await axios(config)
         return Register;
       }
     } catch (error) {

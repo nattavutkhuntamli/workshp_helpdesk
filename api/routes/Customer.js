@@ -21,6 +21,23 @@ router.get('/',[
     }
 });
 
+router.get('/:id', [
+  param('id').not().isEmpty().withMessage('The id parameter is required.')
+],async(req, res) => {
+  try {
+     const ErrorsValidation = validationResult(req);
+     if (!ErrorsValidation.isEmpty()) {
+        const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
+        return res.status(400).json({ message: ErrorMsg });
+     }
+     const customer = await Customer.searchId(req.params.id);
+     return res.status(200).json(customer);
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+    
+  }
+});
+
 router.post('/create',[
     check('FirstName').not().isEmpty().withMessage('กรุณาระบุ FirstName'),
     check('LastName').not().isEmpty().withMessage('กรุณาระบุ LastName'),

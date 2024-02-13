@@ -40,6 +40,10 @@ const Admin = db.define("tbl_admin", {
     type: DataTypes.ENUM('true', 'false'),
     defaultValue: 'true'
   }
+},{
+  tableName: 'tbl_admin',
+  timestamps: true,
+  comment: 'แอดมิน'
 });
 Admin.sync({ alter: true });
 export default Admin;

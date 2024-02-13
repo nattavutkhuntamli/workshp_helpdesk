@@ -33,7 +33,24 @@ export default {
             throw { statusCode: 404, message: e.message };
         }
     },
+    searchId: async(id) => {
+        try {
+            const customer = await Customer.findByPk(id);
+            if(!customer){
+                throw { statusCode: 404, message: "Customer not found" };
+            }
+            const data = {
+                message:"success",
+                title: "ข้อมูลลูกค้า",
+                data: customer,
+                rows: customer.length,
+            }
+            return data;
+        }catch (e) {
+            throw { statusCode: 404, message: e.message };
+        }
 
+    },
     create: async(value) => {
         try {
             const checkCustomer = await Customer.findOne({
@@ -49,21 +66,21 @@ export default {
                 Phone: value.Phone,
                 Address: value.Address,
             });
-            const messageLine = await LineNotify.findOne({
-                where: { name: 'เพิ่มข้อมูลแอดมิน' }
-            });
-            let config = {
-                method: 'post',
-                url: 'https://notify-api.line.me/api/notify',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': `Bearer ${messageLine.token}`
-                },
-                data: {
-                    message: `มีการสมัครสมาชิก customer โดยใช้ชื่อยูส ${register.username} ลงทะเบียน`,
-                }
-            }
-            await axios(config)
+            // const messageLine = await LineNotify.findOne({
+            //     where: { name: 'เพิ่มข้อมูลแอดมิน' }
+            // });
+            // let config = {
+            //     method: 'post',
+            //     url: 'https://notify-api.line.me/api/notify',
+            //     headers: {
+            //         'Content-Type': 'application/x-www-form-urlencoded',
+            //         'Authorization': `Bearer ${messageLine.token}`
+            //     },
+            //     data: {
+            //         message: `มีการสมัครสมาชิก customer โดยใช้ชื่อยูส ${register.username} ลงทะเบียน`,
+            //     }
+            // }
+            // await axios(config)
             return register;
         }catch (e) {
             throw { statusCode: 404, message: e.message };
