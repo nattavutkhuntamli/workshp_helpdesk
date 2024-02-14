@@ -120,4 +120,51 @@ export default {
       throw { statusCode: 404, message: error.message };
     }
   },
+
+  updatePassword: async(item) => {
+    try {
+      const  isValidateId = await Admin.findOne({
+        where: { id: item.id }
+      })
+      if (!isValidateId) {
+        throw { statusCode: 404, message: "User not found" };
+      }
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(item.password, salt);
+      const updatePassword = await Admin.update(
+        { password:hashedPassword },
+        {
+          where: { id: item.id }
+        }
+      )
+      return {
+        statusCode: 200,
+        message: "Update password success"
+      }
+    } catch (error) {
+      throw { statusCode: 404, message: error.message };
+    }
+  },
+  updateProfile: async(item)=>{
+    try {
+      const  isValidateId = await Admin.findOne({
+        where: { id: item.id }
+      })
+      if (!isValidateId) {
+        throw { statusCode: 404, message: "User not found" };
+      }
+      const updateProfile = await Admin.update(
+        { fullname:item.fullname, email:item.email, phone:item.phone, address:item.address },
+        {
+          where: { id: item.id }
+        }
+      )
+      return {
+        statusCode: 200,
+        message: "Update profile success"
+      }
+    } catch (error) {
+      throw { statusCode: 404, message: error.message };
+    }
+  }
 };

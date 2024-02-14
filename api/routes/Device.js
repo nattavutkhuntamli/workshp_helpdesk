@@ -185,6 +185,7 @@ router.patch('/technnician/:id', Auth_admin, [
       return res.status(error.statusCode || 500).json({ error: error.message });
     }
 });
+
 router.delete('/:id',  Auth_admin,[
     param('id').not().isEmpty().withMessage('ระบุรหัสของอุปกรณ์')
 ], async(req,res) => {

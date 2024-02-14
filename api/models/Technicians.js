@@ -7,6 +7,17 @@ const Technicians = db.define("tbl_technicians", {
     primaryKey: true,
     autoIncrement: true,
   },
+  username:{
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    comment: "ชื่อผู้ใช้งาน",
+  },
+  password:{
+    type: DataTypes.STRING(250),
+    allowNull: false,
+    comment: "รหัสผ่าน",
+
+  },
   FirstName: {
     type: DataTypes.STRING(100),
     allowNull: false,
@@ -27,6 +38,15 @@ const Technicians = db.define("tbl_technicians", {
     allowNull: false,
     comment: "หมายเลขโทรศัพท์ของช่าง",
   },
+  token:{
+    type: DataTypes.STRING(150),
+    allowNull: true,
+    comment: 'token'
+  },
+  status: {
+    type: DataTypes.ENUM('true', 'false'),
+    defaultValue: 'true'
+  }
 }, {
   // tableName: 'tbl_technicians',
   timestamps: true,
