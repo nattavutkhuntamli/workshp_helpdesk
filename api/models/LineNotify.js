@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import db from "../configs/connect.js";
 
-const LineNotify = db.define('tbl_token_line',{
+const LineNotify = db.define('tbl_token_lines',{
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,

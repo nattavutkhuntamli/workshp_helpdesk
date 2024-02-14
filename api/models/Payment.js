@@ -10,7 +10,7 @@ import Repair from './Repair.js';
  *  ตามลำดับ.
  */
 
-const Payment = db.define('tbl_payment', {
+const Payment = db.define('tbl_payments', {
   PaymentID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -39,7 +39,7 @@ const Payment = db.define('tbl_payment', {
     ),
   }
 }, {
-  tableName: 'tbl_Payments',
+  // tableName: 'tbl_Payments',
   timestamps: true,
   comment: 'การชำระเงิน'
 });

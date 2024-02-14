@@ -1,15 +1,23 @@
-import { DataTypes } from "sequelize";
-import db from "../configs/connect.js";
-const Device = db.define("tbl_device", {
+import { DataTypes, ABSTRACT, DatabaseError } from "sequelize";
+import sequelize  from "../configs/connect.js";
+import Customer from "./Customer.js";
+import Technicians from "./Technicians.js";
+import Payment from "./Payment.js";
+const Device = sequelize.define("tbl_devices", {
   DeviceID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  CustomerId: {
+  CustomerID: {
     type: DataTypes.INTEGER,
     allowNull: false,
     comment: "รหัสลูกค้า",
+  },
+  TechnicianID:{
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    comment: 'รหัสของช่าง'
   },
   Images: {
     type: DataTypes.STRING(50),
@@ -50,9 +58,12 @@ const Device = db.define("tbl_device", {
     defaultValue: "แจ้งซ่อม",
   },
 }, {
-  tableName: 'tbl_devices',
+  // modelName: 'Device',
+  // tableName: 'tbl_devices',
   timestamps: true,
   comment: 'อุปกรณ์'
 });
+
+// กำหนดความสัมพันธ์กับโมเดล Customer
 Device.sync({ alter: true });
 export default Device;

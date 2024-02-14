@@ -1,24 +1,95 @@
-import  Device from "../models/Device.js";
-import  Customer from "../models/Customer.js";
+import Device from "../models/Device.js";
+import Customer from "../models/Customer.js";
 
 export default {
-    createDevice : async(item) =>{
+    all: async (value) => {
+        try {
+           
+            const page = parseInt(value.page) || 1;
+            const limit = 10;
+            const offset = (page - 1) * limit;
+            Device.belongsTo(Customer, {
+                foreignKey: "CustomerID", 
+            });
+            const query = await Device.findAndCountAll({
+                include: [
+                    {
+                        model: Customer,
+                        attributes: ['FirstName', 'LastName', 'Email', 'Phone', 'Address'],
+                    }
+                ],
+                limit: limit,
+                offset: offset,
+            });
+            const totalItems = query.count; // นับจำนวนข้อมูลทั้งหมด
+            const totalPages = Math.ceil(totalItems / limit); // คำนวณจำนวนหน้าทั้งหมด
+            const device = query.rows;
+            if (device.length === 0) {
+                throw { statusCode: 404, message: "Device not found" };
+            } else {
+                const data = {
+                    message: "success",
+                    title: "ข้อมูลการแจ้งซ่อม",
+                    data: device,
+                    rows: device.length,
+                    page: page,
+                    totalPages: totalPages,
+                }
+                return data;
+            }
+        } catch (e) {
+            throw { statusCode: 404, message: e.message };
+        }
+    },
+
+    search: async (value) => {
+        try {
+            const page = parseInt(value.page) || 1;
+            const limit = 10;
+            const offset = (page - 1) * limit;
+            const query = await Device.findAndCountAll({
+                where: { CustomerID: value.id },
+                order: [["CustomerID", "DESC"]],
+                limit: limit,
+                offset: offset,
+            });
+            const totalItems = query.count; // นับจำนวนข้อมูลทั้งหมด
+            const totalPages = Math.ceil(totalItems / limit); // คำนวณจำนวนหน้าทั้งหมด
+            const device = query.rows;
+            if (device.length === 0) {
+                throw { statusCode: 404, message: "Device not found" };
+            } else {
+                const data = {
+                    message: "success",
+                    title: "ข้อมูลการแจ้งซ่อม",
+                    data:device,
+                    rows: device.length,
+                    page: page,
+                    totalPages: totalPages,
+                }
+                return data;
+            }
+        } catch (e) {
+            throw { statusCode: e.statusCode, message: e.message };
+        }
+    },
+    createDevice: async (item) => {
         try {
             const customer = await Customer.findOne({
-                where:{ CustomerID: item.CustomerId}
+                where: { CustomerID: item.CustomerId }
             });
-            if(!customer){
+            if (!customer) {
                 throw { statusCode: 404, message: "Customer not found" };
             }
             const CreateDevice = await Device.create({
-                CustomerId:item.CustomerId,
-                Images:item.Images,
-                Brand:item.Brand,
-                Model:item.Model,
-                SerialNumber:item.SerialNumber,
-                Description:item.Description,
+                CustomerID: item.CustomerId,
+                Images: item.Images,
+                Brand: item.Brand,
+                Model: item.Model,
+                SerialNumber: item.SerialNumber,
+                Description: item.Description,
             })
-            if(!CreateDevice){
+            if (!CreateDevice) {
                 throw { statusCode: 404, message: " Create Device false" };
             }
             return CreateDevice;
@@ -26,30 +97,117 @@ export default {
             throw { statusCode: 404, message: e.message };
         }
     },
-
-    updateStatus : async(item) =>{
+    SearchId: async (id) => {
         try {
-            console.log(item)
-            const findOneDevice = await Device.findOne({
-                where:{ DeviceID : item.id}
+            const SearchId = await Device.findOne({
+                where: { DeviceID: id }
             });
-            if(!findOneDevice){
+            if (!SearchId) {
+                throw { statusCode: 404, message: " Device not found" };
+            }
+            return SearchId;
+        } catch (e) {
+            throw { statusCode: e.statusCode, message: e.message };
+        }
+    },
+    updateImage: async (item) => {
+        try {
+            const findOneDevice = await Device.findOne({
+                where: { DeviceID: item.id }
+            });
+            if (!findOneDevice) {
                 throw { statusCode: 404, message: " Device not found" };
             }
             const UpdateDevice = await Device.update({
-                status:item.status,
-            },{
-                where:{
-                    DeviceID:item.id
+                Images: item.image,
+            }, {
+                where: {
+                    DeviceID: item.id
                 }
             })
-            if(!UpdateDevice){
+            if (!UpdateDevice) {
+                throw { statusCode: 404, message: " Update Images Device false" };
+            }
+            return UpdateDevice;
+        } catch (e) {
+            throw { statusCode: 404, message: e.message };
+        }
+    },
+    updateStatus: async (item) => {
+        try {
+            const findOneDevice = await Device.findOne({
+                where: { DeviceID: item.id }
+            });
+            if (!findOneDevice) {
+                throw { statusCode: 404, message: " Device not found" };
+            }
+            const UpdateDevice = await Device.update({
+                status: item.status,
+            }, {
+                where: {
+                    DeviceID: item.id
+                }
+            })
+            if (!UpdateDevice) {
                 throw { statusCode: 404, message: " Update Device false" };
             }
             return UpdateDevice;
         } catch (e) {
             throw { statusCode: 404, message: e.message };
         }
+    },
+    updateData: async (item) => {
+        try {
+            const UpdateDevice = await Device.update({
+                Brand: item.Brand,
+                Model: item.Model,
+                SerialNumber: item.SerialNumber,
+                Description: item.Description,
+            }, {
+                where: {
+                    DeviceID: item.id
+                }
+            })
+            if (!UpdateDevice) {
+                throw { statusCode: 404, message: " Update Device false" };
+            }
+            return UpdateDevice;
+        } catch (e) {
+            throw { statusCode: e.statusCode, message: e.message };
+        }
+    },
 
+    updateTechnnician: async (item) => {
+        try {
+            const UpdateDevice = await Device.update({
+                TechnicianID: item.TechnicianID,
+            }, {
+                where: {
+                    DeviceID : item.id
+                }
+            })
+            if (!UpdateDevice) {
+                throw { statusCode: 404, message: " Update Device false" };
+            }
+            return UpdateDevice;
+        } catch (e) {
+            throw { statusCode: 404, message: e.message };
+        }
+    },
+
+    deleteDevice: async (item) => {
+        try {
+            const DeleteDevice = await Device.destroy({
+                where: {
+                    DeviceID: item.id
+                }
+            })
+            if (!DeleteDevice) {
+                throw { statusCode: 404, message: " Delete Device false" };
+            }
+            return DeleteDevice;
+        } catch (e) {
+            throw { statusCode: e.statusCode, message: e.message };
+        }
     }
 }

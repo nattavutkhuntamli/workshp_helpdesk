@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
-import db from "../configs/connect.js";
+import sequelize from "../configs/connect.js";
 
-const Customer = db.define("tbl_Customer", {
+const Customer = sequelize.define("tbl_customers", {
   CustomerID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -33,7 +33,8 @@ const Customer = db.define("tbl_Customer", {
     comment: "ที่อยู่ของลูกค้า",
   },
 }, {
-  tableName: 'tbl_customers',
+  
+  // tableName: 'tbl_customers',
   timestamps: true,
   comment: 'ลูกค้า'
 });

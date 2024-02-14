@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import db from "../configs/connect.js";
 
-const Admin = db.define("tbl_admin", {
+const Admin = db.define("tbl_admins", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -41,7 +41,7 @@ const Admin = db.define("tbl_admin", {
     defaultValue: 'true'
   }
 },{
-  tableName: 'tbl_admin',
+  // tableName: 'tbl_admin',
   timestamps: true,
   comment: 'แอดมิน'
 });

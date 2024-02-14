@@ -10,7 +10,7 @@ import Technicians from './Technicians.js'
  *  ตามลำดับ.
  */
 
-const Repair = db.define('tbl_repair', {
+const Repair = db.define('tbl_repairs', {
   RepairID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -43,7 +43,7 @@ const Repair = db.define('tbl_repair', {
     comment: 'จำนวนเงินที่ชำระ'
   },
 }, {
-  tableName: 'tbl_Repairs',
+  // tableName: 'tbl_Repairs',
   timestamps: true,
   comment: 'งานซ่อม'
 });
