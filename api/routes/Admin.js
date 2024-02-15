@@ -1,69 +1,72 @@
+
 import express from 'express';
-import { query , param,check, validationResult } from 'express-validator';
+import { query, param, check, validationResult } from 'express-validator';
 import AdminController from '../controllers/Admin.js'
 import Auth_admin from '../middleware/Auth_admin.js';
+
 const router = express.Router();
 
-
-router.get('/',[
+router.get('/', [
     query('page').isInt().withMessage('กรุณาระบุ page เป็นตัวเลข')
-],Auth_admin, async(req, res) => {
+], Auth_admin, async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
         if (!ErrorsValidation.isEmpty()) {
             const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
             return res.status(400).json({ message: ErrorMsg });
         }
-        const admins = await AdminController.all(req.query); 
+        const admins = await AdminController.all(req.query);
         return res.status(200).json(admins);
     } catch (error) {
         console.error(error.message);
         return res.status(error.statusCode || 500).json({ error: error.message });
     }
 });
-router.get('/checkAuth', Auth_admin, async(req,res) => {
+
+router.get('/checkAuth', Auth_admin, async (req, res) => {
     return res.status(200).json({
         message: 'Successfully logged in',
         data: req.admin
     })
 })
-router.post('/register',[
+
+router.post('/register', [
     check('username', 'Username is required').not().isEmpty(),
     check('password', '<PASSWORD>').not().isEmpty(),
     check('fullname', 'Fullname is required').not().isEmpty(),
     check('email', 'Email is required').not().isEmpty(),
     check('phone', 'Phone is required').not().isEmpty(),
     check('address', 'Address is required').not().isEmpty()
-], Auth_admin  , async(req,res) => {
-    try{
+], Auth_admin, async (req, res) => {
+    try {
         const ErrorsValidation = validationResult(req);
         if (!ErrorsValidation.isEmpty()) {
             const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
             return res.status(400).json({ message: ErrorMsg });
         }
-       const register = await AdminController.Register(req.body);
-       return res.status(200).json({
-        message: 'Successfully registered',
-        data: register
-       });
-    }catch(error) {
-       return res.status(error.statusCode || 500).json({ error: error.message });
+        const register = await AdminController.Register(req.body);
+        return res.status(200).json({
+            message: 'Successfully registered',
+            data: register
+        });
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({ error: error.message });
     }
 })
 
 
-router.post('/login',[
+router.post('/login', [
     check('username', 'Username is required').not().isEmpty(),
     check('password', '<PASSWORD>').not().isEmpty()
-], async(req, res) =>{
-    try{
+], async (req, res) => {
+    try {
         const Validation = await validationResult(req)
-        if(!Validation.isEmpty()){
-            return res.status(400).json({error: Validation.array()[0].msg});
+        if (!Validation.isEmpty()) {
+            return res.status(400).json({ error: Validation.array()[0].msg });
         }
         const login = await AdminController.Login(req.body);
         return res.status(200).json({
-            status:200,
+            status: 200,
             message: 'Successfully logged in',
             data: {
                 id: login.id,
@@ -76,26 +79,26 @@ router.post('/login',[
                 status: login.status,
             }
         });
-    }catch(error) {
+    } catch (error) {
         return res.status(error.statusCode || 500).json({ error: error.message });
     }
 })
 
 
 router.patch('/editProfile/:id', Auth_admin, [
-    param('id','ระบุรหัสของ id').not().isEmpty(),
+    param('id', 'ระบุรหัสของ id').not().isEmpty(),
     check('fullname', 'Fullname is required').not().isEmpty(),
     check('email', 'Email is required').not().isEmpty(),
     check('phone', 'Phone is required').not().isEmpty(),
     check('address', 'Address is required').not().isEmpty()
-], async(req,res) => {
-    try{
+], async (req, res) => {
+    try {
         const ErrorsValidation = validationResult(req);
         if (!ErrorsValidation.isEmpty()) {
             const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
             return res.status(400).json({ message: ErrorMsg });
         }
-        const updateProfile =  await AdminController.updateProfile({id: req.params.id, fullname: req.body.fullname, email: req.body.email, phone: req.body.phone, address: req.body.address});
+        const updateProfile = await AdminController.updateProfile({ id: req.params.id, fullname: req.body.fullname, email: req.body.email, phone: req.body.phone, address: req.body.address });
         return res.status(200).json({
             message: 'Successfully updated profile',
         })
@@ -105,17 +108,17 @@ router.patch('/editProfile/:id', Auth_admin, [
     }
 })
 
-router.patch('/editPassword/:id',Auth_admin,[
-    param('id','ระบุรหัสของ id').not().isEmpty(),
+router.patch('/editPassword/:id', Auth_admin, [
+    param('id', 'ระบุรหัสของ id').not().isEmpty(),
     check('password', '<PASSWORD>').not().isEmpty()
-], async(req,res) => {
+], async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
         if (!ErrorsValidation.isEmpty()) {
             const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
             return res.status(400).json({ message: ErrorMsg });
         }
-        const updatePassword =  await AdminController.updatePassword({id: req.params.id, password: req.body.password});
+        const updatePassword = await AdminController.updatePassword({ id: req.params.id, password: req.body.password });
         return res.status(200).json({
             message: 'Successfully updated password',
         })

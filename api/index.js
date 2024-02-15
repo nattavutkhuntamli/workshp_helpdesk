@@ -1,5 +1,8 @@
 import express  from 'express';
 const app = express();
+import swaggerUi  from 'swagger-ui-express'; 
+import { swaggerSpec  } from './swggerDefinition.js'; // แก้ไขการ import
+
 
 const port = process.env.PORT || 3000;
 
@@ -12,7 +15,7 @@ app.use(express.json({ limit: "1000MB" }));
 
 app.use('/',express.static(`./public/uploads/device/`))
 
-
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api', Router_api);
 
 app.use((req,res) => {

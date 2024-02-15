@@ -1,8 +1,6 @@
 import express from 'express';
-/**
- *  import Router
- */
 import AdminRouter  from './Admin.js';
+
 import CustomerRouter from './Customer.js';
 import DeviceRouter from './Device.js';
 import TechniciansRouter from './Technicians.js';

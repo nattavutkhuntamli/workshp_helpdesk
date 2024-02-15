@@ -49,4 +49,23 @@ export default {
         }
     },
 
+    editTechnicians: async (id,value) => {
+        try {
+            const technicians = await TechniciansModel.findByPk(id);
+            if (!technicians) {
+                throw { statusCode: 404, message: "Technicians not found" };
+            } else {
+                const data = {
+                    message: "success",
+                    title: "ข้อมูลการแจ้งซ่อม",
+                    data: technicians,
+                    rows: technicians.length,
+                }
+                return data;
+            }
+        }catch (e) {
+            throw { statusCode: 404, message: e.message };
+        }
+    },
+
 }
