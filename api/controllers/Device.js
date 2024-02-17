@@ -4,41 +4,56 @@ import Customer from "../models/Customer.js";
 export default {
     all: async (value) => {
         try {
-           
             const page = parseInt(value.page) || 1;
             const limit = 10;
             const offset = (page - 1) * limit;
             Device.belongsTo(Customer, {
-                foreignKey: "CustomerID", 
+                foreignKey: "CustomerID",
             });
-            const query = await Device.findAndCountAll({
+            const { count: totalItems, rows: device } = await Device.findAndCountAll({
                 include: [
                     {
                         model: Customer,
                         attributes: ['FirstName', 'LastName', 'Email', 'Phone', 'Address'],
                     }
                 ],
+                order: [["DeviceID", "DESC"]],
                 limit: limit,
                 offset: offset,
             });
-            const totalItems = query.count; // นับจำนวนข้อมูลทั้งหมด
-            const totalPages = Math.ceil(totalItems / limit); // คำนวณจำนวนหน้าทั้งหมด
-            const device = query.rows;
-            if (device.length === 0) {
+            const totalPages = Math.ceil(totalItems / limit);
+            const dataDevice = device.map(item => ({
+                DeviceID: item.DeviceID,
+                CustomerID: item.CustomerID,
+                TechnicianID: item.TechnicianID,
+                Fullname: `${item.tbl_customer.FirstName} ${item.tbl_customer.LastName}`,
+                Email: item.tbl_customer.Email,
+                Phone: item.tbl_customer.Phone,
+                Images: item.Images,
+                Brand: item.Brand,
+                Model: item.Model,
+                SerialNumber: item.SerialNumber,
+                Description: item.Description,
+                status: item.status,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt,
+            }));
+
+            if (dataDevice.length === 0) {
                 throw { statusCode: 404, message: "Device not found" };
             } else {
                 const data = {
                     message: "success",
                     title: "ข้อมูลการแจ้งซ่อม",
-                    data: device,
-                    rows: device.length,
+                    data: dataDevice,
+                    rows: dataDevice.length,
                     page: page,
                     totalPages: totalPages,
                 }
                 return data;
             }
         } catch (e) {
-            throw { statusCode: 404, message: e.message };
+            throw { statusCode: e.statusCode || 500, message: e.message || "Internal Server Error" };
         }
     },
 
@@ -62,7 +77,7 @@ export default {
                 const data = {
                     message: "success",
                     title: "ข้อมูลการแจ้งซ่อม",
-                    data:device,
+                    data: device,
                     rows: device.length,
                     page: page,
                     totalPages: totalPages,
@@ -183,7 +198,7 @@ export default {
                 TechnicianID: item.TechnicianID,
             }, {
                 where: {
-                    DeviceID : item.id
+                    DeviceID: item.id
                 }
             })
             if (!UpdateDevice) {
