@@ -1,5 +1,6 @@
 import express from 'express';
-import { query , check, param, validationResult } from 'express-validator';
+import { body, query ,param,  validationResult } from 'express-validator';
+
 import Customer from '../controllers/Customer.js';
 import Auth_admin from '../middleware/Auth_admin.js';
 const router = express.Router();
@@ -39,11 +40,11 @@ router.get('/:id', [
 });
 
 router.post('/create',[
-    check('FirstName').not().isEmpty().withMessage('กรุณาระบุ FirstName'),
-    check('LastName').not().isEmpty().withMessage('กรุณาระบุ LastName'),
-    check('Email').not().isEmpty().withMessage('กรุณาระบุ Email'),
-    check('Phone').not().isEmpty().withMessage('กรุณาระบุ Phone'),
-    check('Address').not().isEmpty().withMessage('กรุณาระบุ Address')
+    body('FirstName').not().isEmpty().withMessage('กรุณาระบุ FirstName'),
+    body('LastName').not().isEmpty().withMessage('กรุณาระบุ LastName'),
+    body('Email').not().isEmpty().withMessage('กรุณาระบุ Email'),
+    body('Phone').not().isEmpty().withMessage('กรุณาระบุ Phone'),
+    body('Address').not().isEmpty().withMessage('กรุณาระบุ Address')
 ], Auth_admin, async(req, res) => {
    try {
       const ErrorsValidation = validationResult(req);
@@ -63,11 +64,11 @@ router.post('/create',[
 
 router.patch('/edit/:id', [
     param('id').not().isEmpty().withMessage('The id parameter is required.'),
-    check('FirstName').not().isEmpty().withMessage('กรุณาระบุ FirstName'),
-    check('LastName').not().isEmpty().withMessage('กรุณาระบุ LastName'),
-    check('Email').not().isEmpty().withMessage('กรุณาระบุ Email'),
-    check('Phone').not().isEmpty().withMessage('กรุณาระบุ Phone'),
-    check('Address').not().isEmpty().withMessage('กรุณาระบุ Address')
+    body('FirstName').not().isEmpty().withMessage('กรุณาระบุ FirstName'),
+    body('LastName').not().isEmpty().withMessage('กรุณาระบุ LastName'),
+    body('Email').not().isEmpty().withMessage('กรุณาระบุ Email'),
+    body('Phone').not().isEmpty().withMessage('กรุณาระบุ Phone'),
+    body('Address').not().isEmpty().withMessage('กรุณาระบุ Address')
 ], async(req, res) => {
   try {
     const ErrorsValidation = validationResult(req);

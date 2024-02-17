@@ -1,5 +1,6 @@
 import express from 'express';
-import { query, param, check, validationResult } from 'express-validator';
+import { body, query ,param,  validationResult } from 'express-validator';
+
 import base64Img from 'base64-img'
 import fs from 'fs';
 import path from 'path';
@@ -41,12 +42,12 @@ router.get('/search', Auth_admin, [
 });
 
 router.post('/create', Auth_admin, [
-    check('CustomerId').not().isEmpty().withMessage('กรุณาระบุ CustomerId'),
-    check('Images').not().isEmpty().withMessage('กรุณาระบุ Images'),
-    check('Brand').not().isEmpty().withMessage('กรุณาระบุ Brand'),
-    check('Model').not().isEmpty().withMessage('กรุณาระบุ Model'),
-    check('SerialNumber').not().isEmpty().withMessage('กรุณาระบุ SerialNumber'),
-    check('Description').not().isEmpty().withMessage('กรุณาระบุ Description')
+    body('CustomerId').not().isEmpty().withMessage('กรุณาระบุ CustomerId'),
+    body('Images').not().isEmpty().withMessage('กรุณาระบุ Images'),
+    body('Brand').not().isEmpty().withMessage('กรุณาระบุ Brand'),
+    body('Model').not().isEmpty().withMessage('กรุณาระบุ Model'),
+    body('SerialNumber').not().isEmpty().withMessage('กรุณาระบุ SerialNumber'),
+    body('Description').not().isEmpty().withMessage('กรุณาระบุ Description')
 ], async (req, res) => {
     try {
 
@@ -85,7 +86,7 @@ router.post('/create', Auth_admin, [
 
 router.patch('/updateStatus/:id',  Auth_admin,[
     param('id').not().isEmpty().withMessage('ระบุรหัสของอุปกรณ์'),
-    check('status').not().isEmpty().withMessage('กรุณาระบุ status เช่น  แจ้งซ่อม , รอตรวจสอบ , ดำเนินการ , ส่งซ่อม/เคลม , รอผู้แจ้งดำเนินการ , รอส่งซ่อม , สำเร็จ , ยกเลิก  ')
+    body('status').not().isEmpty().withMessage('กรุณาระบุ status เช่น  แจ้งซ่อม , รอตรวจสอบ , ดำเนินการ , ส่งซ่อม/เคลม , รอผู้แจ้งดำเนินการ , รอส่งซ่อม , สำเร็จ , ยกเลิก  ')
 ], async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
@@ -105,7 +106,7 @@ router.patch('/updateStatus/:id',  Auth_admin,[
 
 router.patch('/uploadImage/:id',  Auth_admin,[
     param('id').not().isEmpty().withMessage('Please provide device ID'),
-    check('Images').not().isEmpty().withMessage('Please provide an image')
+    body('Images').not().isEmpty().withMessage('Please provide an image')
 ], async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
@@ -113,11 +114,11 @@ router.patch('/uploadImage/:id',  Auth_admin,[
             const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
             return res.status(400).json({ message: ErrorMsg });
         }
-        const checkIdValidity = await Device.SearchId(req.params.id)
-        if (!checkIdValidity) {
+        const bodyIdValidity = await Device.SearchId(req.params.id)
+        if (!bodyIdValidity) {
             return res.status(404).json({ message: 'ไม่พบอุปกรณ์ที่ระบุ' });
         }
-        const ImagesOld = path.join(uploadDir, 'device', checkIdValidity.Images);
+        const ImagesOld = path.join(uploadDir, 'device', bodyIdValidity.Images);
         if (fs.existsSync(ImagesOld)) {
             fs.unlinkSync(ImagesOld);
         }
@@ -138,10 +139,10 @@ router.patch('/uploadImage/:id',  Auth_admin,[
 
 router.patch('/editDevice/:id', Auth_admin, [
     param('id').not().isEmpty().withMessage('ระบุรหัสของอุปกรณ์'),
-    check('Brand').not().isEmpty().withMessage('กรุณาระบุ Brand'),
-    check('Model').not().isEmpty().withMessage('กรุณาระบุ Model'),
-    check('SerialNumber').not().isEmpty().withMessage('กรุณาระบุ SerialNumber'),
-    check('Description').not().isEmpty().withMessage('กรุณาระบุ Description')
+    body('Brand').not().isEmpty().withMessage('กรุณาระบุ Brand'),
+    body('Model').not().isEmpty().withMessage('กรุณาระบุ Model'),
+    body('SerialNumber').not().isEmpty().withMessage('กรุณาระบุ SerialNumber'),
+    body('Description').not().isEmpty().withMessage('กรุณาระบุ Description')
 ], async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
@@ -149,8 +150,8 @@ router.patch('/editDevice/:id', Auth_admin, [
             const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
             return res.status(400).json({ message: ErrorMsg });
         }
-        const checkIdValidity = await Device.SearchId(req.params.id)
-        if (!checkIdValidity) {
+        const bodyIdValidity = await Device.SearchId(req.params.id)
+        if (!bodyIdValidity) {
             return res.status(404).json({ message: 'ไม่พบอุปกรณ์ที่ระบุ' });
         }
         const updateDevice = await Device.editDevice({ id: req.params.id, Brand: req.body.Brand, Model: req.body.Model, SerialNumber: req.body.SerialNumber, Description: req.body.Description });
@@ -165,7 +166,7 @@ router.patch('/editDevice/:id', Auth_admin, [
 
 router.patch('/technnician/:id', Auth_admin, [
     param('id').not().isEmpty().withMessage('ระบุรหัสของอุปกรณ์'),
-    check('TechnicianID').not().isEmpty().withMessage('รหัสช่างที่ได้รับมอบหมายงาน')
+    body('TechnicianID').not().isEmpty().withMessage('รหัสช่างที่ได้รับมอบหมายงาน')
 ],async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
@@ -173,8 +174,8 @@ router.patch('/technnician/:id', Auth_admin, [
             const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
             return res.status(400).json({ message: ErrorMsg });
         }
-        const checkIdValidity = await Device.SearchId(req.params.id)
-        if (!checkIdValidity) {
+        const bodyIdValidity = await Device.SearchId(req.params.id)
+        if (!bodyIdValidity) {
             return res.status(404).json({ message: 'ไม่พบอุปกรณ์ที่ระบุ' });
         }
         const updateTechnnician = await Device.updateTechnnician({ id: req.params.id, TechnicianID: req.body.TechnicianID });
@@ -195,11 +196,11 @@ router.delete('/:id',  Auth_admin,[
             const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
             return res.status(400).json({ message: ErrorMsg });
         }
-        const checkIdValidity = await Device.SearchId(req.params.id)
-        if (!checkIdValidity) {
+        const bodyIdValidity = await Device.SearchId(req.params.id)
+        if (!bodyIdValidity) {
             return res.status(404).json({ message: 'ไม่พบอุปกรณ์ที่ระบุ' });
         }
-        const ImagesOld = path.join(uploadDir, 'device', checkIdValidity.Images);
+        const ImagesOld = path.join(uploadDir, 'device', bodyIdValidity.Images);
         if (fs.existsSync(ImagesOld)) {
             fs.unlinkSync(ImagesOld);
         }

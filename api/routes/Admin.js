@@ -1,14 +1,15 @@
 
 import express from 'express';
-import { query, param, check, validationResult } from 'express-validator';
+import { body, query ,param,  validationResult } from 'express-validator';
+
 import AdminController from '../controllers/Admin.js'
 import Auth_admin from '../middleware/Auth_admin.js';
 
 const router = express.Router();
 
-router.get('/', [
+router.get('/',Auth_admin, [
     query('page').isInt().withMessage('กรุณาระบุ page เป็นตัวเลข')
-], Auth_admin, async (req, res) => {
+],  async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
         if (!ErrorsValidation.isEmpty()) {
@@ -30,14 +31,15 @@ router.get('/checkAuth', Auth_admin, async (req, res) => {
     })
 })
 
-router.post('/register', [
-    check('username', 'Username is required').not().isEmpty(),
-    check('password', '<PASSWORD>').not().isEmpty(),
-    check('fullname', 'Fullname is required').not().isEmpty(),
-    check('email', 'Email is required').not().isEmpty(),
-    check('phone', 'Phone is required').not().isEmpty(),
-    check('address', 'Address is required').not().isEmpty()
-], Auth_admin, async (req, res) => {
+router.post('/register', Auth_admin, [
+    body('username', 'Username is required').not().isEmpty(),
+    body('password', '<PASSWORD>').not().isEmpty(),
+    body('fullname', 'Fullname is required').not().isEmpty(),
+    body('email', 'Email is required').not().isEmpty(),
+    body('Email').notEmpty().withMessage('กรุณาระบุอีเมล').isEmail().withMessage('รูปแบบอีเมลไม่ถูกต้อง'),
+    body('phone', 'Phone is required').not().isEmpty(),
+    body('address', 'Address is required').not().isEmpty()
+],  async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
         if (!ErrorsValidation.isEmpty()) {
@@ -56,8 +58,8 @@ router.post('/register', [
 
 
 router.post('/login', [
-    check('username', 'Username is required').not().isEmpty(),
-    check('password', '<PASSWORD>').not().isEmpty()
+    body('username', 'Username is required').not().isEmpty(),
+    body('password', '<PASSWORD>').not().isEmpty()
 ], async (req, res) => {
     try {
         const Validation = await validationResult(req)
@@ -87,10 +89,10 @@ router.post('/login', [
 
 router.patch('/editProfile/:id', Auth_admin, [
     param('id', 'ระบุรหัสของ id').not().isEmpty(),
-    check('fullname', 'Fullname is required').not().isEmpty(),
-    check('email', 'Email is required').not().isEmpty(),
-    check('phone', 'Phone is required').not().isEmpty(),
-    check('address', 'Address is required').not().isEmpty()
+    body('fullname', 'Fullname is required').not().isEmpty(),
+    body('email', 'Email is required').not().isEmpty(),
+    body('phone', 'Phone is required').not().isEmpty(),
+    body('address', 'Address is required').not().isEmpty()
 ], async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);
@@ -110,7 +112,7 @@ router.patch('/editProfile/:id', Auth_admin, [
 
 router.patch('/editPassword/:id', Auth_admin, [
     param('id', 'ระบุรหัสของ id').not().isEmpty(),
-    check('password', '<PASSWORD>').not().isEmpty()
+    body('password', '<PASSWORD>').not().isEmpty()
 ], async (req, res) => {
     try {
         const ErrorsValidation = validationResult(req);

@@ -38,10 +38,10 @@ const Technicians = db.define("tbl_technicians", {
     allowNull: false,
     comment: "หมายเลขโทรศัพท์ของช่าง",
   },
-  token:{
-    type: DataTypes.STRING(150),
+  token: {
+    type: DataTypes.TEXT,
     allowNull: true,
-    comment: 'token'
+    defaultValue: null
   },
   status: {
     type: DataTypes.ENUM('true', 'false'),

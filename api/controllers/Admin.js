@@ -113,11 +113,12 @@ export default {
             where: { id: specificUser.id },
           }
         );
+        
         specificUser.token = token;
         return specificUser;
       }
     } catch (error) {
-      throw { statusCode: 404, message: error.message };
+      throw { statusCode: 400, message: error.message };
     }
   },
 
@@ -142,7 +143,7 @@ export default {
         message: "Update password success"
       }
     } catch (error) {
-      throw { statusCode: 404, message: error.message };
+      throw { statusCode: 400, message: error.message };
     }
   },
   updateProfile: async(item)=>{
@@ -164,7 +165,8 @@ export default {
         message: "Update profile success"
       }
     } catch (error) {
-      throw { statusCode: 404, message: error.message };
+      throw { statusCode: 400, message: error.message };
+
     }
   }
 };
