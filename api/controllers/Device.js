@@ -14,7 +14,7 @@ export default {
                 include: [
                     {
                         model: Customer,
-                        attributes: ['FirstName', 'LastName', 'Email', 'Phone', 'Address'],
+                        attributes: ['FirstName', 'LastName', 'Email', 'Phone'],
                     }
                 ],
                 order: [["DeviceID", "DESC"]],
@@ -42,7 +42,7 @@ export default {
             if (dataDevice.length === 0) {
                 throw { statusCode: 404, message: "Device not found" };
             } else {
-                const data = {
+                return {
                     message: "success",
                     title: "ข้อมูลการแจ้งซ่อม",
                     data: dataDevice,
@@ -50,9 +50,9 @@ export default {
                     page: page,
                     totalPages: totalPages,
                 }
-                return data;
             }
         } catch (e) {
+            console.error("Error occurred:", e);
             throw { statusCode: e.statusCode || 500, message: e.message || "Internal Server Error" };
         }
     },
@@ -62,28 +62,52 @@ export default {
             const page = parseInt(value.page) || 1;
             const limit = 10;
             const offset = (page - 1) * limit;
-            const query = await Device.findAndCountAll({
-                where: { CustomerID: value.id },
-                order: [["CustomerID", "DESC"]],
+            Device.belongsTo(Customer, {
+                foreignKey: "CustomerID",
+            });
+            const { count: totalItems, rows: device } = await Device.findAndCountAll({
+                include: [
+                    {
+                        model: Customer,
+                        attributes: ['FirstName', 'LastName', 'Email', 'Phone'],
+                    }
+                ],
+                where: { DeviceID: value.id },
+                order: [["DeviceID", "DESC"]],
                 limit: limit,
                 offset: offset,
             });
-            const totalItems = query.count; // นับจำนวนข้อมูลทั้งหมด
-            const totalPages = Math.ceil(totalItems / limit); // คำนวณจำนวนหน้าทั้งหมด
-            const device = query.rows;
-            if (device.length === 0) {
+            const totalPages = Math.ceil(totalItems / limit);
+            const dataDevice = device.map(item => ({
+                DeviceID: item.DeviceID,
+                CustomerID: item.CustomerID,
+                TechnicianID: item.TechnicianID,
+                Fullname: `${item.tbl_customer.FirstName} ${item.tbl_customer.LastName}`,
+                Email: item.tbl_customer.Email,
+                Phone: item.tbl_customer.Phone,
+                Images: item.Images,
+                Brand: item.Brand,
+                Model: item.Model,
+                SerialNumber: item.SerialNumber,
+                Description: item.Description,
+                status: item.status,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt,
+            }));
+
+            if (dataDevice.length === 0) {
                 throw { statusCode: 404, message: "Device not found" };
             } else {
-                const data = {
+                return {
                     message: "success",
                     title: "ข้อมูลการแจ้งซ่อม",
-                    data: device,
-                    rows: device.length,
+                    data: dataDevice,
+                    rows: dataDevice.length,
                     page: page,
                     totalPages: totalPages,
                 }
-                return data;
             }
+
         } catch (e) {
             throw { statusCode: e.statusCode, message: e.message };
         }
