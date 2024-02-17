@@ -13,7 +13,7 @@ const uploadDir = path.resolve('./public/uploads')
 let rs_file;
 
 router.get('/',  Auth_admin,[
-    query('page').isInt().withMessage('กรุณาระบุ page เป็นตัวเลข'),
+    query('page').isInt().not().isEmpty().withMessage('กรุณาระบุ page เป็นตัวเลข'),
 ],async(req, res) => {
     try {
         const result = await Device.all({ page: req.query.page});
@@ -84,6 +84,23 @@ router.post('/create', Auth_admin, [
     }
 })
 
+router.patch('/updateRepair/:deviceId', Auth_admin, [
+    param('deviceId','กรุณาระบุ DevicesId').isInt().not().isEmpty(),
+    body('description','description กรุณาระบุรายละเอียดการซ่อม').isString().not().isEmpty(),
+    body('Cost','Cost ระบุราคาซ่อม').isInt().not().isEmpty()
+], async(req,res) => {
+    try{
+        const ErrorsValidation = validationResult(req);
+        if (!ErrorsValidation.isEmpty()) {
+            const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
+            return res.status(400).json({ message: ErrorMsg });
+        }
+        const updateRepair = await Device.updateRepair({DeviceId:req.params.deviceId,Description:req.body.description, Cost:req.body.Cost});
+        return res.status(200).json(updateRepair)
+    }catch(e){
+      return res.status(e.statusCode || 500).json({ error: e.message });
+    } 
+});
 router.patch('/updateStatus/:id',  Auth_admin,[
     param('id').not().isEmpty().withMessage('ระบุรหัสของอุปกรณ์'),
     body('status').not().isEmpty().withMessage('กรุณาระบุ status เช่น  แจ้งซ่อม , รอตรวจสอบ , ดำเนินการ , ส่งซ่อม/เคลม , รอผู้แจ้งดำเนินการ , รอส่งซ่อม , สำเร็จ , ยกเลิก  ')

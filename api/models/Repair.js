@@ -29,7 +29,7 @@ const Repair = db.define('tbl_repairs', {
   },
   TechnicianID:{
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     comment: 'รหัสของช่างที่รับผิดชอบการซ่อม'
   },
   Description: {

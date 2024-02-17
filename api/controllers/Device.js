@@ -1,6 +1,7 @@
 import Device from "../models/Device.js";
 import Customer from "../models/Customer.js";
-
+import Repair from "../models/Repair.js";
+import moment from "moment";
 export default {
     all: async (value) => {
         try {
@@ -215,7 +216,59 @@ export default {
             throw { statusCode: e.statusCode, message: e.message };
         }
     },
+    updateRepair: async (item) => {
+        try {
+            console.log(item)
+            const isValidatedDeviceId = await Device.findOne({
+                where: { DeviceID: item.DeviceId }
+            })
+            if (!isValidatedDeviceId) {
+                throw { statusCode: 404, message: " Device ID not in device database" };
+            }
+            const IsValidatedRepairDeviceId = await Repair.findOne({
+                where: { DeviceID: item.DeviceId }
+            })
+            if (!IsValidatedRepairDeviceId) {
+                const CreateRepairDevice = await Repair.create({
+                    DeviceID: item.DeviceId,
+                    RepairDate: moment(),
+                    Description: item.Description,
+                    Cost: item.Cost,
+                });
+                if (!CreateRepairDevice) {
+                    throw { statusCode: 404, message: " Create Repair Device false" };
+                }
+                return {
+                    message: "success",
+                    title: "แก้ไขข้อมูลการแจ้งซอม",
+                }
+            } else {
+                const UpdateDevice = await Repair.update(
+                    {
+                        RepairDate: moment(),
+                        Description: item.Description,
+                        Cost: item.Cost,
+                    },
+                    {
+                        where: {
+                            DeviceID: item.id
+                        }
+                    }
+                );
+                if (!UpdateDevice) {
+                    throw { statusCode: 404, message: " Update Device false" };
+                }
+                return {
+                    message: "success",
+                    title: "แก้ไขข้อมูลการแจ้งซ่อม",
+                }
+            }
 
+
+        } catch (e) {
+            throw { statusCode: 404, message: e.message };
+        }
+    },
     updateTechnnician: async (item) => {
         try {
             const UpdateDevice = await Device.update({
