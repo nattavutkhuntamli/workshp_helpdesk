@@ -11,30 +11,41 @@ export default {
         const page = parseInt(value.page) || 1;
         const limit = 10;
         const offset = (page - 1) * limit;
-  
-        const query = await Admin.findAndCountAll({
-            attributes: ['id', 'username','fullname', 'email','phone', 'address','status','token','createdAt','updatedAt'], // ระบุแอตทริบิวต์ที่ต้องการดึงข้อมูล
-            order: [["id", "DESC"]],
-            limit: limit,
-            offset: offset,
+
+
+        const  { count:totalItems, rows: admin} = await Admin.findAndCountAll({
+          attributes: ['id', 'username','fullname', 'email','phone', 'address','status','token','createdAt','updatedAt'],
+          order: [["id", "DESC"]],
+          limit: limit,
+          offset: offset,
         });
-  
-        const totalItems = query.count; // นับจำนวนข้อมูลทั้งหมด
-        const totalPages = Math.ceil(totalItems / limit); //คำนวณหาจำนวนหน้าทั้งหมด
-        const admin = query.rows;
-  
-        const data = {
-          message:"success",
-          title: "ข้อมูลสมาชิก",
-          data: admin,
-          rows: admin.length,
-          page: page,
-          totalPages: totalPages,
-        };
-  
-        return data;
+        const totalPages = Math.ceil(totalItems / limit); //คำนว��หา��ำนวนหน้า��ั้งหมด
+        const dataAdmin = admin.map(item => ({
+            id: item.id,
+            username: item.username,
+            fullname: item.fullname,
+            email: item.email,
+            phone: item.phone,
+            address: item.address,
+            status: item.status,
+            token: item.token,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+        }))
+        if(dataAdmin.length === 0) {
+          throw { statusCode: 404, message: "Admin not found" };
+        }else {
+          return {
+            message:"success",
+            title: "ข้อมูลสมาชิก",
+            data: dataAdmin,
+            rows: dataAdmin.length,
+            page: page,
+            totalPages: totalPages,
+          };
+        }
     } catch (error) {
-      throw { statusCode: 404, message: error.message };
+      throw { statusCode: error.statusCode || 400, message: error.message };
     }
   },
 

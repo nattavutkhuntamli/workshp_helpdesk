@@ -101,6 +101,25 @@ router.patch('/updateRepair/:deviceId', Auth_admin, [
       return res.status(e.statusCode || 500).json({ error: e.message });
     } 
 });
+
+router.patch('/payment/:RepairId', [
+  param('RepairId', 'กรุณาระบุ RepairId').isInt().not().isEmpty(),
+  body('amount', 'กรุณาระบุ amount').isInt().not().isEmpty(),
+  body('status', 'กรุณาระบุ status ประเภทต่อไปนี้ (เงินสด, โอน, บัตรเครดิต)').isString().not().isEmpty()
+], async(req, res) => {
+    try{
+        const ErrorsValidation = validationResult(req);
+        if (!ErrorsValidation.isEmpty()) {
+            const ErrorMsg = ErrorsValidation.array().map((err) => err.msg);
+            return res.status(400).json({ message: ErrorMsg });
+        }
+        const item = { RepairId: req.params.RepairId, amount: req.body.amount, status: req.body.status }
+        const updatePayment = await Device.updatePayment(item);
+        return res.status(200).json(updatePayment)
+    }catch(e) {
+        return res.status(e.statusCode || 500).json({ error: e.message });
+    }
+})
 router.patch('/updateStatus/:id',  Auth_admin,[
     param('id').not().isEmpty().withMessage('ระบุรหัสของอุปกรณ์'),
     body('status').not().isEmpty().withMessage('กรุณาระบุ status เช่น  แจ้งซ่อม , รอตรวจสอบ , ดำเนินการ , ส่งซ่อม/เคลม , รอผู้แจ้งดำเนินการ , รอส่งซ่อม , สำเร็จ , ยกเลิก  ')

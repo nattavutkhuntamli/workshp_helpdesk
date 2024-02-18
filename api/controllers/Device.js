@@ -1,6 +1,7 @@
 import Device from "../models/Device.js";
 import Customer from "../models/Customer.js";
 import Repair from "../models/Repair.js";
+import Payment from "../models/Payment.js";
 import moment from "moment";
 export default {
     all: async (value) => {
@@ -218,7 +219,7 @@ export default {
     },
     updateRepair: async (item) => {
         try {
-            console.log(item)
+            
             const isValidatedDeviceId = await Device.findOne({
                 where: { DeviceID: item.DeviceId }
             })
@@ -267,6 +268,33 @@ export default {
 
         } catch (e) {
             throw { statusCode: 404, message: e.message };
+        }
+    },
+
+    updatePayment : async (item) => {
+        try {
+            const { RepairId, amount , status} = item
+            const isValidtedRepairId = await Payment.findOne({
+                where: { RepairID: RepairId }
+            });
+            if (!isValidtedRepairId) {
+                const createPayment = await Payment.create({
+                    RepairID: RepairId,
+                    Amount: amount,
+                    PaymentDate:moment(),
+                    Method: status,
+                });
+                if (!createPayment) {
+                    throw { statusCode: 404, message: " Create Payment Device false" };
+                }
+                return {
+                    message: "success",
+                    title: "สร้างข้อมูลการชำระเงินสำเร็จ",
+                }
+            }
+            
+        } catch (e) {
+            throw { statusCode: e.statusCode, message: e.message };
         }
     },
     updateTechnnician: async (item) => {

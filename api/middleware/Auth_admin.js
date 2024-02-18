@@ -7,7 +7,7 @@ const Auth_admin = async (req, res, next) => {
         const token = req.headers.authorization.split(' ')[1];
         const decoded = jwt.verify(token, SECRET);
         const admin = await Admin.findOne({ where: { username: decoded.username } });
-        if (!admin || admin.status !== 'true') {
+        if (!admin || admin.status !== 'true' || admin.token !== token) {
             return res.status(401).json({
                 message: 'Unauthorized'
             });
@@ -19,7 +19,6 @@ const Auth_admin = async (req, res, next) => {
             email: admin.email,
             phone: admin.phone,
             address: admin.address,
-            token: admin.token , 
             status: admin.status
         };
         next();

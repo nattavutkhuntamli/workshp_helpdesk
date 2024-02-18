@@ -113,6 +113,40 @@ export default {
 
 /**
  * @swagger
+ * /api/payment/{RepairId}:
+ *   patch:
+ *     summary: อัปเดตการชำระเงินสำหรับการซ่อม
+ *     tags: [Devices]
+ *     parameters:
+ *       - in: path
+ *         name: RepairId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: รหัสการซ่อมที่ต้องการอัปเดตการชำระเงิน
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               amount:
+ *                 type: integer
+ *               status:
+ *                 type: string
+ *                 enum: [เงินสด, โอน, บัตรเครดิต]
+ *     responses:
+ *       '200':
+ *         description: อัปเดตการชำระเงินสำเร็จ
+ *       '400':
+ *         description: ข้อมูลไม่ถูกต้อง
+ *       '500':
+ *         description: เกิดข้อผิดพลาดที่ไม่คาดคิด
+ */
+
+/**
+ * @swagger
  * /api/devices/uploadImage/{id}:
  *   patch:
  *     summary: อัปโหลดรูปภาพของอุปกรณ์
@@ -140,6 +174,38 @@ export default {
  *         description: ข้อมูลไม่ถูกต้อง
  *       '404':
  *         description: ไม่พบอุปกรณ์ที่ระบุ
+ *       '500':
+ *         description: เกิดข้อผิดพลาดที่ไม่คาดคิด
+ */
+/**
+ * @swagger
+ * /api/updateRepair/{deviceId}:
+ *   patch:
+ *     summary: อัปเดตข้อมูลการซ่อมของอุปกรณ์
+ *     tags: [Devices]
+ *     parameters:
+ *       - in: path
+ *         name: deviceId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: รหัสของอุปกรณ์ที่ต้องการอัปเดตข้อมูลการซ่อม
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               description:
+ *                 type: string
+ *               Cost:
+ *                 type: integer
+ *     responses:
+ *       '200':
+ *         description: อัปเดตข้อมูลการซ่อมสำเร็จ
+ *       '400':
+ *         description: ข้อมูลไม่ถูกต้อง
  *       '500':
  *         description: เกิดข้อผิดพลาดที่ไม่คาดคิด
  */
