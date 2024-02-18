@@ -119,7 +119,8 @@ router.patch('/payment/:RepairId', [
     }catch(e) {
         return res.status(e.statusCode || 500).json({ error: e.message });
     }
-})
+});
+
 router.patch('/updateStatus/:id',  Auth_admin,[
     param('id').not().isEmpty().withMessage('ระบุรหัสของอุปกรณ์'),
     body('status').not().isEmpty().withMessage('กรุณาระบุ status เช่น  แจ้งซ่อม , รอตรวจสอบ , ดำเนินการ , ส่งซ่อม/เคลม , รอผู้แจ้งดำเนินการ , รอส่งซ่อม , สำเร็จ , ยกเลิก  ')

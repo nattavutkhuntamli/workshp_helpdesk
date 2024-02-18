@@ -115,7 +115,7 @@ export default {
  * @swagger
  * /api/payment/{RepairId}:
  *   patch:
- *     summary: อัปเดตการชำระเงินสำหรับการซ่อม
+ *     summary: อัปเดตการชำระเงินสำหรับการซ่อม หมายเหตุ status ประกอบไปด้วย ('เงินสด', 'โอน', 'บัตรเครดิต') 
  *     tags: [Devices]
  *     parameters:
  *       - in: path
